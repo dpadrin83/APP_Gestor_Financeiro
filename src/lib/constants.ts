@@ -29,3 +29,37 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   Freelance: "#3b82f6",
   Outros: "#a3a3a3",
 };
+
+export const BILL_CATEGORIES = [
+  "Conta fixa",
+  "Serviço",
+  "Imposto",
+  "Fornecedor",
+  "Cartão",
+  "Assinatura",
+  "Outros",
+] as const;
+export type BillCategory = (typeof BILL_CATEGORIES)[number];
+
+export const BILL_RECURRENCES = ["mensal", "anual", "semanal"] as const;
+export type BillRecurrence = (typeof BILL_RECURRENCES)[number];
+
+export const BILL_STATUSES = ["pendente", "agendado", "pago", "vencido"] as const;
+export type BillStatus = (typeof BILL_STATUSES)[number];
+
+export const BANK_TYPES = [
+  "corrente",
+  "poupanca",
+  "cartao",
+  "investimento",
+  "outro",
+] as const;
+export type BankType = (typeof BANK_TYPES)[number];
+
+export const BANK_TYPE_LABEL: Record<BankType, string> = {
+  corrente: "Conta corrente",
+  poupanca: "Poupança",
+  cartao: "Cartão de crédito",
+  investimento: "Investimento",
+  outro: "Outro",
+};

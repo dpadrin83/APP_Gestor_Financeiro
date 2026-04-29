@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CategoryPieChart } from "@/components/category-pie-chart";
 import { MonthFilter } from "@/components/month-filter";
 import { TagFilter } from "@/components/tag-filter";
+import { UpcomingBillsWidget } from "@/components/upcoming-bills-widget";
 import { currentMonthIso, getDashboardSummary } from "@/lib/transactions/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Tag } from "@/lib/constants";
@@ -87,6 +88,8 @@ export default async function DashboardPage({
           </CardContent>
         </Card>
       </div>
+
+      <UpcomingBillsWidget />
 
       <div className="grid gap-4 lg:grid-cols-5">
         <Card className="lg:col-span-3">

@@ -9,14 +9,24 @@ shadcn/ui e Recharts.
 
 ## Features
 
-- Login e cadastro com Supabase Auth (e-mail + senha)
+- Login e cadastro com Supabase Auth (e-mail + senha) e fluxo de
+  confirmação de e-mail com aviso amigável
 - Proteção de rotas via `proxy.ts` (Next.js 16)
 - CRUD de transações (descrição, valor, data, tipo, categoria, tag)
-- Dashboard com cards de Receitas, Despesas e Saldo
+- **Bancos**: cadastro de contas/cartões com cor, tipo e identificação
+- **Contas recorrentes**: assinaturas, faturas e fornecedores com
+  geração automática mês a mês, status (Pendente/Agendado/Pago/Vencido)
+  e ações de marcar como pago / agendar / reverter
+- **Alertas**: contas vencidas e próximas dos 15 dias, com badge de
+  contagem na navegação
+- Dashboard com cards de Receitas, Despesas, Saldo + widget "Contas a vencer"
 - Gráfico de pizza de despesas por categoria (Recharts)
 - Filtros por mês, tipo, categoria, tag e busca por descrição
 - Importar e exportar CSV (UTF-8 com BOM)
-- Row Level Security: cada usuário só vê suas transações
+- Toggle de tema claro/escuro com persistência em localStorage
+- Row Level Security: cada usuário só vê seus dados
+- Fundação para conciliação de extratos: campos `bank_id`, `external_id`
+  e `reconciled` em transactions
 - Layout responsivo (mobile-first)
 
 ## Setup local
@@ -30,7 +40,10 @@ npm install
 ### 2. Criar projeto Supabase
 
 1. Acesse [supabase.com](https://supabase.com) e crie um projeto.
-2. Em **SQL Editor**, cole e execute o conteúdo de [supabase/schema.sql](supabase/schema.sql).
+2. Em **SQL Editor**, cole e execute o conteúdo de [supabase/schema.sql](supabase/schema.sql)
+   (esse arquivo já contém as migrações 0001 + 0002). Se você já tinha o
+   projeto da versão anterior, rode apenas
+   [supabase/migrations/0002_banks_and_bills.sql](supabase/migrations/0002_banks_and_bills.sql).
 3. Em **Authentication → Providers**, mantenha _Email_ habilitado. Para
    desenvolvimento, desabilite "Confirm email" para login imediato.
 4. Em **Settings → API**, copie a `Project URL` e a `anon public` key.
