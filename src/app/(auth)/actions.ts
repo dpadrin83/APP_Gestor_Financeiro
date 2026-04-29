@@ -3,9 +3,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-type ActionResult = { error: string } | undefined;
+export type AuthResult =
+  | { error: string }
+  | { confirmEmail: true; email: string }
+  | undefined;
 
-export async function loginAction(formData: FormData): Promise<ActionResult> {
+export async function loginAction(formData: FormData): Promise<AuthResult> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
@@ -14,12 +17,20 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.message.toLowerCase().includes("email not confirmed")) {
+      return {
+        error:
+          "E-mail ainda não confirmado. Abra o link que enviamos para você (verifique também o spam).",
+      };
+    }
+    return { error: error.message };
+  }
 
   redirect("/dashboard");
 }
 
-export async function signupAction(formData: FormData): Promise<ActionResult> {
+export async function signupAction(formData: FormData): Promise<AuthResult> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
@@ -27,9 +38,13 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
   if (password.length < 6) return { error: "Senha deve ter ao menos 6 caracteres." };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) return { error: error.message };
+
+  if (!data.session) {
+    return { confirmEmail: true, email };
+  }
 
   redirect("/dashboard");
 }

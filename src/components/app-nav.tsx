@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, ListOrdered, LogOut, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { logoutAction } from "@/app/(auth)/actions";
 
 const navItems = [
@@ -48,12 +49,13 @@ export function AppNav({ email }: { email?: string }) {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {email && (
             <span className="hidden text-xs text-muted-foreground md:block">
               {email}
             </span>
           )}
+          <ThemeToggle />
           <form action={logoutAction}>
             <Button type="submit" variant="ghost" size="sm">
               <LogOut className="h-4 w-4" />

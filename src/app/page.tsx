@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const features = [
   {
@@ -56,6 +57,7 @@ export default function Home() {
             Gestor Financeiro
           </Link>
           <nav className="flex items-center gap-2">
+            <ThemeToggle />
             <Button asChild variant="ghost" size="sm">
               <Link href="/login">Entrar</Link>
             </Button>
