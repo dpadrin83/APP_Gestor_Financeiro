@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { ArrowDownCircle, ArrowUpCircle, Plus, Wallet } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CategoryPieChart } from "@/components/category-pie-chart";
+import { DashboardGreeting } from "@/components/dashboard-greeting";
 import { MonthFilter } from "@/components/month-filter";
+import { QuickActions } from "@/components/quick-actions";
+import { SummaryCards } from "@/components/summary-cards";
 import { TagFilter } from "@/components/tag-filter";
 import { UpcomingBillsWidget } from "@/components/upcoming-bills-widget";
+import { createClient } from "@/lib/supabase/server";
 import { currentMonthIso, getDashboardSummary } from "@/lib/transactions/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Tag } from "@/lib/constants";
@@ -20,73 +23,40 @@ export default async function DashboardPage({
   const month = params.month ?? currentMonthIso();
   const tag = (params.tag ?? "all") as Tag | "all";
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const summary = await getDashboardSummary({ month, tag });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <DashboardGreeting email={user?.email ?? undefined} />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground">
-            Visão consolidada do período.
+            Visão consolidada do período selecionado.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <MonthFilter value={month} />
           <TagFilter value={tag} />
-          <Button asChild size="sm">
-            <Link href="/transacoes?new=1">
-              <Plus className="h-4 w-4" />
-              Nova transação
-            </Link>
-          </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Receitas
-            </CardTitle>
-            <ArrowUpCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-emerald-600">
-              {formatCurrency(summary.receitaTotal)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Despesas
-            </CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-rose-500" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-rose-600">
-              {formatCurrency(summary.despesaTotal)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Saldo
-            </CardTitle>
-            <Wallet className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <p
-              className={`text-2xl font-bold ${
-                summary.saldo >= 0 ? "text-blue-600" : "text-rose-600"
-              }`}
-            >
-              {formatCurrency(summary.saldo)}
-            </p>
-          </CardContent>
-        </Card>
+      <SummaryCards
+        receitaTotal={summary.receitaTotal}
+        despesaTotal={summary.despesaTotal}
+        saldo={summary.saldo}
+      />
+
+      <div>
+        <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+          Ações rápidas
+        </h2>
+        <QuickActions />
       </div>
 
       <UpcomingBillsWidget />
@@ -102,20 +72,36 @@ export default async function DashboardPage({
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader>
+          <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Últimas transações</CardTitle>
+            {summary.recent.length > 0 && (
+              <Link
+                href="/transacoes"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                Ver todas <ArrowRight className="h-3 w-3" />
+              </Link>
+            )}
           </CardHeader>
           <CardContent>
             {summary.recent.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                Nenhuma transação no período.
-              </p>
+              <div className="flex flex-col items-center gap-3 py-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma transação no período.
+                </p>
+                <Link
+                  href="/transacoes?new=1"
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Criar primeira transação →
+                </Link>
+              </div>
             ) : (
               <ul className="space-y-2">
                 {summary.recent.map((tx) => (
                   <li
                     key={tx.id}
-                    className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+                    className="flex items-center justify-between rounded-md border px-3 py-2 text-sm transition-colors hover:bg-accent/50"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">

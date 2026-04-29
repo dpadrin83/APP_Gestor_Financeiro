@@ -9,8 +9,24 @@ export type CategoryDatum = { name: Category; value: number };
 export function CategoryPieChart({ data }: { data: CategoryDatum[] }) {
   if (!data.length) {
     return (
-      <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
-        Sem despesas no período selecionado.
+      <div className="flex h-72 flex-col items-center justify-center gap-2 text-center">
+        <div className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="h-6 w-6"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v9l6 4" />
+          </svg>
+        </div>
+        <p className="text-sm font-medium">Sem despesas no período</p>
+        <p className="text-xs text-muted-foreground">
+          Cadastre transações para ver a distribuição por categoria.
+        </p>
       </div>
     );
   }
